@@ -20,9 +20,9 @@ class CBPiWebSocket {
     }
 
     open() {
-        if (process.env.NODE_ENV === "development") {
-            console.log("DEV MODE ON", "WebSocket URL", process.env.REACT_APP_WEBSOCKET_URL);
-            this.ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL, []);
+        if (import.meta.env.DEV) {
+            console.log("DEV MODE ON", "WebSocket URL", import.meta.env.REACT_APP_WEBSOCKET_URL);
+            this.ws = new WebSocket(import.meta.env.REACT_APP_WEBSOCKET_URL, []);
 
         } else {
             const protocol = document.location.protocol === 'https:' ? 'wss:' : 'ws:'
