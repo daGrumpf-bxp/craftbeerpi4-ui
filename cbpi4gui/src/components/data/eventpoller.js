@@ -4,6 +4,9 @@ import axios from "axios";
 // works through any reverse proxy, and a cut connection only costs one request.
 const POLL_TIMEOUT = 25; // seconds the server may hold a request
 const RETRY_DELAYS = [1000, 2000, 5000, 10000];
+// min time between two polls: events arriving meanwhile come in one answer
+// instead of one request per sensor reading
+const MIN_INTERVAL = 1000;
 
 class CBPiEventPoller {
 
@@ -57,8 +60,11 @@ class CBPiEventPoller {
 
     async loop() {
         while (this.running) {
+            const started = Date.now();
             try {
                 await this.poll();
+                const wait = MIN_INTERVAL - (Date.now() - started);
+                if (wait > 0) await new Promise((resolve) => setTimeout(resolve, wait));
             } catch (e) {
                 if (!this.running) break;
                 this.connection_lost();
